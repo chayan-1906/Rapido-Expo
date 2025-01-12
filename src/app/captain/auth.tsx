@@ -1,4 +1,4 @@
-import {Image, SafeAreaView, ScrollView, TouchableOpacity, View} from "react-native";
+import {Alert, Image, SafeAreaView, ScrollView, TouchableOpacity, View} from "react-native";
 import {authStyles} from "@/styles/authStyles";
 import {useState} from "react";
 import {commonStyles} from "@/styles/commonStyles";
@@ -6,14 +6,18 @@ import {MaterialIcons} from "@expo/vector-icons";
 import CustomText from "@/components/shared/CustomText";
 import PhoneInput from "@/components/shared/PhoneInput";
 import CustomButton from "@/components/shared/CustomButton";
-import resetAndNavigate from "@/utils/Helpers";
-import {Routes} from "@/utils/Routes";
+import {loginApi} from "@/services/authService";
 
 function CaptainAuth() {
     const [phone, setPhone] = useState('');
 
-    const handleNext = () => {
-        resetAndNavigate(Routes.CAPTAIN_HOME);
+    const handleNext = async () => {
+        if (!phone || phone.trim().length !== 10) {
+            Alert.alert('Please enter a valid phone number');
+            return;
+        }
+
+        await loginApi({role: 'captain', phone});
     }
 
     return (

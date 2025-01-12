@@ -7,7 +7,7 @@ function PhoneInput({value, onChangeText, onBlur, onFocus}: PhoneInputProps) {
     return (
         <View style={styles.container}>
             <CustomText fontFamily={'Medium'} style={styles.text}>🇮🇳 +91</CustomText>
-            <TextInput placeholder={'0000000000'} placeholderTextColor={'#CCC'} maxLength={1} keyboardType={'phone-pad'} value={value}
+            <TextInput placeholder={'0000000000'} placeholderTextColor={'#CCC'} maxLength={10} keyboardType={'phone-pad'} value={value}
                        onChangeText={onChangeText} onFocus={onFocus} onBlur={onBlur} style={styles.input}/>
         </View>
     );

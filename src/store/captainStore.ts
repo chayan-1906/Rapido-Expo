@@ -1,5 +1,5 @@
 import {create} from "zustand/react";
-import {createJSONStorage, persist} from "zustand/middleware/persist";
+import {createJSONStorage, persist} from "zustand/middleware";
 import {secureStorage} from "@/store/storage";
 
 type CaptainLocation = {

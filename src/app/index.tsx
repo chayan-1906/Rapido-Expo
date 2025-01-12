@@ -1,11 +1,20 @@
-import {Image, View} from "react-native";
+import {Alert, Image, View} from "react-native";
 import {commonStyles} from "@/styles/commonStyles";
 import {splashStyles} from "@/styles/splashStyles";
 import CustomText from "@/components/shared/CustomText";
 import {useFonts} from "expo-font";
 import {useEffect, useState} from "react";
+import {getAccessToken, getRefreshToken} from "@/store/storage";
 import resetAndNavigate from "@/utils/Helpers";
+import {jwtDecode} from "jwt-decode";
 import {Routes} from "@/utils/Routes";
+import {refreshTokenApi} from "@/services/apiInterceptors";
+import {useCustomerStore} from "@/store/customerStore";
+import {useCaptainStore} from "@/store/captainStore";
+
+interface DecodedToken {
+    exp: number;
+}
 
 function Main() {
     const [loaded] = useFonts({
@@ -16,10 +25,43 @@ function Main() {
         SemiBold: require('../assets/fonts/NotoSans-SemiBold.ttf'),
     });
 
+    const {user: customer} = useCustomerStore();
+    const {user: captain} = useCaptainStore();
     const [hasNavigated, setHasNavigated] = useState(false);
 
     const tokenCheck = async () => {
-        resetAndNavigate(Routes.ROLE);
+        const accessToken = await getAccessToken() as string;
+        const refreshToken = await getRefreshToken() as string;
+
+        if (accessToken) {
+            const decodedAccessToken = jwtDecode<DecodedToken>(accessToken);
+            const decodedRefreshToken = jwtDecode<DecodedToken>(refreshToken);
+
+            const currentTime = Date.now() / 1000;
+            if (decodedRefreshToken?.exp < currentTime) {
+                console.log('refresh token expired 🔌');
+                resetAndNavigate(Routes.ROLE);
+                Alert.alert('Session expired, please login again');
+            }
+
+            if (decodedAccessToken?.exp < currentTime) {
+                console.log('access token expired ⚠︎');
+                try {
+                    await refreshTokenApi();
+                } catch (error) {
+                    console.log('error in getting refresh token: ❌', error);
+                    Alert.alert('Could not retrieve refresh token');
+                }
+            }
+
+            if (customer) {
+                resetAndNavigate(Routes.CUSTOMER_HOME);
+            } else if (captain) {
+                resetAndNavigate(Routes.CAPTAIN_HOME);
+            }
+        } else {
+            resetAndNavigate(Routes.ROLE);
+        }
     }
 
     useEffect(() => {
