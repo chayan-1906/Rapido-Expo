@@ -1,12 +1,13 @@
 import axios from "axios";
-import {useUserStore} from "@/store/userStore";
+import {useCustomerStore} from "@/store/customerStore";
+import {MAP_API_KEY} from "@/utils/config";
 
 export const getLatLong = async (placeId: string) => {
     try {
         const response = await axios.get("https://maps.googleapis.com/maps/api/place/details/json", {
             params: {
                 placeid: placeId,
-                key: process.env.EXPO_PUBLIC_MAP_API_KEY,
+                key: MAP_API_KEY,
             },
         });
         const data = response.data;
@@ -30,7 +31,7 @@ export const getLatLong = async (placeId: string) => {
 export const reverseGeocode = async (latitude: number, longitude: number) => {
     try {
         const response = await axios.get(
-            `https://maps.googleapis.com/maps/api/geocode/json?latlng=${latitude},${longitude}&key=${process.env.EXPO_PUBLIC_MAP_API_KEY}`
+            `https://maps.googleapis.com/maps/api/geocode/json?latlng=${latitude},${longitude}&key=${MAP_API_KEY}`
         );
         if (response.data.status === 'OK') {
             const address = response.data.results[0].formatted_address;
@@ -54,7 +55,7 @@ function extractPlaceData(data: any) {
 }
 
 export const getPlacesSuggestions = async (query: string) => {
-    const {location} = useUserStore.getState();
+    const {location} = useCustomerStore.getState();
     try {
         const response = await axios.get(
             `https://maps.googleapis.com/maps/api/place/autocomplete/json`, {
@@ -63,7 +64,7 @@ export const getPlacesSuggestions = async (query: string) => {
                     location: `${location?.latitude},${location?.longitude}`,
                     radius: 50000,
                     components: 'country:IN',
-                    key: process.env.EXPO_PUBLIC_MAP_API_KEY,
+                    key: MAP_API_KEY,
                 }
             }
         );

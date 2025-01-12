@@ -20,7 +20,7 @@ export const modalStyles = StyleSheet.create({
         fontSize: RFValue(12),
     },
     button: {
-        backgroundColor: Colors.iosColor,
+        backgroundColor: Colors.iOSColor,
         borderRadius: 6,
         padding: 14,
         justifyContent: 'center',
@@ -46,7 +46,7 @@ export const modalStyles = StyleSheet.create({
         textTransform: 'capitalize',
     },
     cancelButton: {
-        color: Colors.iosColor,
+        color: Colors.iOSColor,
         fontSize: RFValue(13),
         position: 'absolute',
         top: -18,

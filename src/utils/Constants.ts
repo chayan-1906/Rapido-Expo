@@ -14,3 +14,8 @@ export enum Colors {
     secondary_light = '#F6F7F9',
     iOSColor = '#007AFF'
 }
+
+export enum SecureStorageKeys {
+    accessToken = 'accessToken',
+    refreshToken = 'refreshToken',
+}
