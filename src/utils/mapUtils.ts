@@ -30,19 +30,17 @@ export const getLatLong = async (placeId: string) => {
 
 export const reverseGeocode = async (latitude: number, longitude: number) => {
     try {
-        const response = await axios.get(
-            `https://maps.googleapis.com/maps/api/geocode/json?latlng=${latitude},${longitude}&key=${MAP_API_KEY}`
-        );
+        const response = await axios.get(`https://maps.googleapis.com/maps/api/geocode/json?latlng=${latitude},${longitude}&key=${MAP_API_KEY}`);
         if (response.data.status === 'OK') {
             const address = response.data.results[0].formatted_address;
-            return address
+            return address;
         } else {
-            console.log('Geocoding failed: ', response.data.status);
-            return ""
+            console.log('Geocoding failed:', response.data.status);
+            return '';
         }
     } catch (error) {
-        console.log('Error during reverse geocoding: ', error);
-        return ""
+        console.log('Error during reverse geocoding:', error);
+        return '';
     }
 };
 

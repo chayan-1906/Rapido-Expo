@@ -1,10 +1,12 @@
-import {Href, router} from "expo-router";
+import {Href, Router, router} from "expo-router";
 
-function resetAndNavigate(newPath: string) {
+export function resetAndNavigate(path: string) {
     if (router.canGoBack()) {
         router.dismissAll();
     }
-    router.replace(newPath as Href);
+    router.replace(path as Href);
 }
 
-export default resetAndNavigate;
+export function navigate(router: Router, path: string) {
+    router.navigate(path as Href);
+}

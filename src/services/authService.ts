@@ -1,7 +1,7 @@
 import {useCustomerStore} from "@/store/customerStore";
 import {useCaptainStore} from "@/store/captainStore";
 import {secureStorage, storeAccessToken, storeRefreshToken} from "@/store/storage";
-import resetAndNavigate from "@/utils/Helpers";
+import {resetAndNavigate} from "@/utils/Helpers";
 import {Routes} from "@/utils/Routes";
 import {Alert} from "react-native";
 import axios from "axios";

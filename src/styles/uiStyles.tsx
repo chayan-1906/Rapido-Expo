@@ -51,7 +51,7 @@ export const uiStyles = StyleSheet.create({
     },
     locationText: {
         width: '86%',
-        fontSize: RFValue(10),
+        fontSize: RFValue(12),
         fontFamily: 'Regular',
         color: Colors.text,
         opacity: 0.8,

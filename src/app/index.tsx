@@ -5,7 +5,7 @@ import CustomText from "@/components/shared/CustomText";
 import {useFonts} from "expo-font";
 import {useEffect, useState} from "react";
 import {getAccessToken, getRefreshToken} from "@/store/storage";
-import resetAndNavigate from "@/utils/Helpers";
+import {resetAndNavigate} from "@/utils/Helpers";
 import {jwtDecode} from "jwt-decode";
 import {Routes} from "@/utils/Routes";
 import {refreshTokenApi} from "@/services/apiInterceptors";

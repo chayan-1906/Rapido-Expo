@@ -12,6 +12,7 @@ function RootLayout() {
 
                 <Stack.Screen name={Routes.CUSTOMER_AUTH}/>
                 <Stack.Screen name={Routes.CUSTOMER_HOME}/>
+                <Stack.Screen name={Routes.CUSTOMER_SELECT_LOCATIONS}/>
 
                 <Stack.Screen name={Routes.CAPTAIN_AUTH}/>
                 <Stack.Screen name={Routes.CAPTAIN_HOME}/>

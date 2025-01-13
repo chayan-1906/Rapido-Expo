@@ -2,7 +2,7 @@ import {Image, TouchableOpacity, View} from "react-native";
 import {roleStyles} from "@/styles/roleStyles";
 import CustomText from "@/components/shared/CustomText";
 import {Routes} from "@/utils/Routes";
-import resetAndNavigate from "@/utils/Helpers";
+import {resetAndNavigate} from "@/utils/Helpers";
 
 function Role() {
     const handleCustomerPress = () => {
