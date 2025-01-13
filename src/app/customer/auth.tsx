@@ -8,9 +8,11 @@ import PhoneInput from "@/components/shared/PhoneInput";
 import CustomButton from "@/components/shared/CustomButton";
 import {loginApi} from "@/services/authService";
 import {Colors} from "@/utils/Constants";
+import {useWS} from "@/services/WSProvider";
 
 function CustomerAuth() {
     const [phone, setPhone] = useState('');
+    const {updateAccessToken} = useWS();
 
     const handleNext = async () => {
         if (!phone || phone.trim().length !== 10) {
@@ -18,7 +20,7 @@ function CustomerAuth() {
             return;
         }
 
-        await loginApi({role: 'customer', phone});
+        await loginApi({role: 'customer', phone}, updateAccessToken);
     }
 
     return (

@@ -8,7 +8,7 @@ import axios from "axios";
 import Apis from "@/utils/Apis";
 
 // ✅✅✅
-export const loginApi = async (payload: { role: 'customer' | 'captain', phone: string }) => {
+export const loginApi = async (payload: { role: 'customer' | 'captain', phone: string }, updateAccessToken: () => void) => {
     const {setUser: setCustomer} = useCustomerStore.getState();
     const {setUser: setCaptain} = useCaptainStore.getState();
 
@@ -37,6 +37,8 @@ export const loginApi = async (payload: { role: 'customer' | 'captain', phone: s
             } else if (user.role === 'captain') {
                 resetAndNavigate(Routes.CAPTAIN_HOME);
             }
+
+            updateAccessToken();
         }
     } catch (error: any) {
         Alert.alert('Oh! Dang there was an error');

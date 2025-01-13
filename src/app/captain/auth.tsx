@@ -7,9 +7,11 @@ import CustomText from "@/components/shared/CustomText";
 import PhoneInput from "@/components/shared/PhoneInput";
 import CustomButton from "@/components/shared/CustomButton";
 import {loginApi} from "@/services/authService";
+import {useWS} from "@/services/WSProvider";
 
 function CaptainAuth() {
     const [phone, setPhone] = useState('');
+    const {updateAccessToken} = useWS();
 
     const handleNext = async () => {
         if (!phone || phone.trim().length !== 10) {
@@ -17,7 +19,7 @@ function CaptainAuth() {
             return;
         }
 
-        await loginApi({role: 'captain', phone});
+        await loginApi({role: 'captain', phone}, updateAccessToken);
     }
 
     return (
