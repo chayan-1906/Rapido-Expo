@@ -29,13 +29,19 @@ export const getLatLong = async (placeId: string) => {
 }
 
 export const reverseGeocode = async (latitude: number, longitude: number) => {
+    console.log('reverseGeocode:', latitude, longitude);
     try {
-        const response = await axios.get(`https://maps.googleapis.com/maps/api/geocode/json?latlng=${latitude},${longitude}&key=${MAP_API_KEY}`);
-        if (response.data.status === 'OK') {
-            const address = response.data.results[0].formatted_address;
+        const url = `https://maps.googleapis.com/maps/api/geocode/json?latlng=${latitude},${longitude}&key=${MAP_API_KEY}`;
+        console.log('url:', url);
+        const response = await axios.get(url);
+        const responseData = response.data;
+        // console.log('responseData:', responseData);
+        if (responseData.status === 'OK') {
+            const address = responseData.results[0].formatted_address;
             return address;
         } else {
-            console.log('Geocoding failed:', response.data.status);
+            console.log('Geocoding failed:', responseData.status);
+            console.log('Geocoding failed message:', responseData.error_message);
             return '';
         }
     } catch (error) {

@@ -1,6 +1,6 @@
-import { Colors, screenWidth } from '@/utils/Constants';
-import { StyleSheet } from 'react-native';
-import { RFValue } from 'react-native-responsive-fontsize';
+import {Colors, screenWidth} from '@/utils/Constants';
+import {StyleSheet} from 'react-native';
+import {RFValue} from 'react-native-responsive-fontsize';
 
 export const uiStyles = StyleSheet.create({
     absoluteTop: {
@@ -90,7 +90,7 @@ export const uiStyles = StyleSheet.create({
     cubes: {
         flexDirection: 'row',
         marginVertical: 20,
-        alignItems: 'baseline',
+        // alignItems: 'baseline',
         justifyContent: 'space-between',
     },
     adImage: {

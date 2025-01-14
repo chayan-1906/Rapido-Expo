@@ -6,22 +6,24 @@ import {StatusBar} from "expo-status-bar";
 import LocationBar from "@/components/customer/location-bar";
 import {screenHeight} from "@/utils/Constants";
 import DraggableMap from "@/app/customer/draggable-map";
+import BottomSheet, {BottomSheetScrollView} from "@gorhom/bottom-sheet";
+import SheetContent from "@/components/customer/SheetContent";
 
-const androidHeights = [screenHeight * 0.12, screenHeight * 0.42];
-const iOSHeights = [screenHeight * 0.2, screenHeight * 0.5];
+const androidHeights = [screenHeight * 0.22, screenHeight * 0.42, screenHeight * 0.7];
+const iOSHeights = [screenHeight * 0.3, screenHeight * 0.5, screenHeight * 0.7];
 
 function CustomerHome() {
     const bottomSheetRef = useRef(null);
     const snapPoints = useMemo(() => Platform.OS === 'ios' ? iOSHeights : androidHeights, []);
 
-    const [mapHeight, setMapHeight] = useState(snapPoints[1]);
+    const [mapHeight, setMapHeight] = useState(screenHeight * 0.90);
 
     const handleSheetChanges = useCallback((index: number) => {
-        let height = screenHeight * 0.8;
+        /*let height = screenHeight * 0.7;
         if (index === 1) {
-            height = screenHeight * 0.5;
+            height = snapPoints[1];
         }
-        setMapHeight(height);
+        setMapHeight(height);*/
     }, []);
 
     useEffect(() => {
@@ -44,6 +46,12 @@ function CustomerHome() {
             <StatusBar style={'light'} backgroundColor={'orange'} translucent={false}/>
             <LocationBar/>
             <DraggableMap height={mapHeight}/>
+            <BottomSheet ref={bottomSheetRef} index={1} handleIndicatorStyle={{}} enableOverDrag={true} enableDynamicSizing={false} style={{zIndex: 4, backgroundColor: 'red'}} snapPoints={snapPoints}
+                         onChange={handleSheetChanges}>
+                <BottomSheetScrollView contentContainerStyle={homeStyles.scrollContainer}>
+                    <SheetContent/>
+                </BottomSheetScrollView>
+            </BottomSheet>
         </View>
     );
 }

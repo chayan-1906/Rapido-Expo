@@ -19,3 +19,8 @@ export enum SecureStorageKeys {
     accessToken = 'accessToken',
     refreshToken = 'refreshToken',
 }
+
+export enum WebSocketKeys {
+    subscribeToZone = 'subscribeToZone',
+    nearbyCaptains = 'nearbyCaptains',
+}

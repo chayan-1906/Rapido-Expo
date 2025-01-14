@@ -2,7 +2,7 @@ import {create} from "zustand/react";
 import {createJSONStorage, persist} from "zustand/middleware";
 import {secureStorage} from "@/store/storage";
 
-type CaptainLocation = {
+export type CaptainLocation = {
     latitude: number;
     longitude: number;
     address: string;

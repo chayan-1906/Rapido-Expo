@@ -1,6 +1,6 @@
 import {Image, TouchableOpacity, View} from "react-native";
-import MapView, {PROVIDER_DEFAULT, Region} from "react-native-maps";
-import {useEffect, useRef, useState} from "react";
+import MapView, {Marker, PROVIDER_GOOGLE, Region} from "react-native-maps";
+import {memo, useEffect, useRef, useState} from "react";
 import {customMapStyle, indiaInitialRegion} from "@/utils/CustomMap";
 import {mapStyles} from "@/styles/mapStyles";
 import {FontAwesome6, MaterialCommunityIcons} from "@expo/vector-icons";
@@ -10,12 +10,15 @@ import {useIsFocused} from "@react-navigation/core";
 import * as Location from 'expo-location';
 import {reverseGeocode} from "@/utils/mapUtils";
 import haversineDistance from "haversine-distance";
+import {useWS} from "@/services/WSProvider";
+import {WebSocketKeys} from "@/utils/Constants";
 
 function DraggableMap({height}: { height: number }) {
     const mapRef = useRef<MapView>(null);
     const {location, setLocation, outOfRange, setOutOfRange} = useCustomerStore();
     const isFocused = useIsFocused();
     const [markers, setMarkers] = useState<any>([]);
+    const {emit, on, off} = useWS();
 
     const MAX_DISTANCE_THRESHOLD = 10000;
 
@@ -75,20 +78,97 @@ function DraggableMap({height}: { height: number }) {
         }
     }
 
+    const generateRandomMarkers = () => {
+        console.log('generateRandomMarkers:', location);
+        if (!location?.latitude || !location?.longitude) return;
+
+        const types = ['bike', 'auto', 'cab'];
+        const newMarkers = Array.from({length: 20}, (_, index) => {
+            const randomType = types[Math.floor(Math.random() * types.length)];
+            const randomRotation = Math.floor(Math.random() * 360);
+
+            return {
+                id: index,
+                latitude: location?.latitude + (Math.random() - 0.5) * 0.01,
+                longitude: location?.longitude + (Math.random() - 0.5) * 0.01,
+                type: randomType,
+                rotation: randomRotation,
+                visible: true,
+            };
+        });
+        console.log('newMarkers:', newMarkers);
+
+        setMarkers(newMarkers);
+    }
+
     useEffect(() => {
         if (isFocused) {
             askLocationAccess();
         }
-    }, [mapRef]);
+    }, [mapRef, isFocused]);
+
+    // REAL CAPTAIN MARKERS
+    // useEffect(() => {
+    //     if (location?.latitude && location?.longitude && isFocused) {
+    //         emit(WebSocketKeys.subscribeToZone, {latitude: location?.latitude, longitude: location?.longitude});
+    //         on(WebSocketKeys.nearbyCaptains, (captains: any[]) => {
+    //             const updatedMarkers = captains.map((captain) => {
+    //                 const {id, coords} = captain;
+    //
+    //                 return ({
+    //                     id,
+    //                     latitude: coords?.latitude,
+    //                     longitude: coords?.longitude,
+    //                     type: 'captain',
+    //                     rotation: coords?.heading,
+    //                     visible: true,
+    //                 });
+    //             });
+    //             setMarkers(updatedMarkers);
+    //         });
+    //
+    //         return () => {
+    //             off(WebSocketKeys.nearbyCaptains);
+    //         }
+    //     }
+    // }, []);
+
+    // SIMULATION NEARBY CAPTAIN
+    useEffect(() => {
+        generateRandomMarkers();
+    }, [location]);
 
     return (
         <View style={{height: height, width: '100%'}}>
             <MapView ref={mapRef} initialRegion={indiaInitialRegion}
-                // cameraZoomRange={{minCenterCoordinateDistance: 12, maxCenterCoordinateDistance: 16}}
-                     pitchEnabled={false} onRegionChangeComplete={handleRegionChangeComplete} style={{flex: 1}} provider={PROVIDER_DEFAULT} customMapStyle={customMapStyle}
+                     minZoomLevel={9}
+                     maxZoomLevel={16}
+                    // cameraZoomRange={{minCenterCoordinateDistance: 12, maxCenterCoordinateDistance: 16}}
+                     pitchEnabled={false} onRegionChangeComplete={handleRegionChangeComplete} style={{flex: 1}} customMapStyle={customMapStyle}
                      showsMyLocationButton={false} showsCompass={false} showsIndoors={false} showsIndoorLevelPicker={false} showsTraffic={false} showsScale={false} showsBuildings={false}
                      showsPointsOfInterest={false} showsUserLocation={true}>
+                {markers.map((marker: any, index: number) => {
+                    const {type, rotation, latitude, longitude, visible} = marker;
+                    let image = require('@/assets/icons/cab_marker.png');
+                    if (type === 'bike') {
+                        image = require('@/assets/icons/bike_marker.png');
+                    } else if (type === 'auto') {
+                        image = require('@/assets/icons/auto_marker.png');
+                    } else if (type === 'cab') {
+                        image = require('@/assets/icons/cab_marker.png');
+                    }
 
+                    return (
+                        visible && (
+                            <Marker key={index} zIndex={index} flat anchor={{x: 0.5, y: 0.5}} coordinate={{latitude, longitude}}>
+                                <View style={{transform: [{rotate: `${rotation}deg`}]}}>
+                                    {/*<Image source={require(image)} style={{height: 40, width: 40}}/>*/}
+                                    <Image source={image} style={{height: 40, width: 40, resizeMode: 'contain'}}/>
+                                </View>
+                            </Marker>
+                        )
+                    );
+                })}
             </MapView>
 
             <View style={mapStyles.centerMarkerContainer}>
@@ -108,4 +188,4 @@ function DraggableMap({height}: { height: number }) {
     );
 }
 
-export default DraggableMap;
+export default memo(DraggableMap);
