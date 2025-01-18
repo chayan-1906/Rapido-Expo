@@ -46,7 +46,7 @@ function CustomerHome() {
             <StatusBar style={'light'} backgroundColor={'orange'} translucent={false}/>
             <LocationBar/>
             <DraggableMap height={mapHeight}/>
-            <BottomSheet ref={bottomSheetRef} index={1} handleIndicatorStyle={{}} enableOverDrag={true} enableDynamicSizing={false} style={{zIndex: 4, backgroundColor: 'red'}} snapPoints={snapPoints}
+            <BottomSheet ref={bottomSheetRef} index={1} handleIndicatorStyle={{}} enableOverDrag={true} enableDynamicSizing={false} style={{zIndex: 4}} snapPoints={snapPoints}
                          onChange={handleSheetChanges}>
                 <BottomSheetScrollView contentContainerStyle={homeStyles.scrollContainer}>
                     <SheetContent/>

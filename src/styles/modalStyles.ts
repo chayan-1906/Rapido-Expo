@@ -41,13 +41,13 @@ export const modalStyles = StyleSheet.create({
     centerText: {
         textAlign: 'center',
         fontWeight: '600',
-        marginTop: 15,
-        fontSize: RFValue(13),
+        marginTop: 16,
+        fontSize: RFValue(16),
         textTransform: 'capitalize',
     },
     cancelButton: {
         color: Colors.iOSColor,
-        fontSize: RFValue(13),
+        fontSize: RFValue(16),
         position: 'absolute',
         top: -18,
         zIndex: 99,
