@@ -5,9 +5,9 @@ import {homeStyles} from "@/styles/homeStyles";
 import {StatusBar} from "expo-status-bar";
 import LocationBar from "@/components/customer/location-bar";
 import {screenHeight} from "@/utils/Constants";
-import DraggableMap from "@/app/customer/draggable-map";
 import BottomSheet, {BottomSheetScrollView} from "@gorhom/bottom-sheet";
 import SheetContent from "@/components/customer/SheetContent";
+import DraggableMap from "@/components/customer/draggable-map";
 
 const androidHeights = [screenHeight * 0.22, screenHeight * 0.42, screenHeight * 0.7];
 const iOSHeights = [screenHeight * 0.3, screenHeight * 0.5, screenHeight * 0.7];

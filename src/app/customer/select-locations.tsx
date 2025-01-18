@@ -1,4 +1,4 @@
-import {FlatList, Image, TouchableOpacity, View} from "react-native";
+import {Alert, FlatList, Image, TouchableOpacity, View} from "react-native";
 import {StatusBar} from "expo-status-bar";
 import {homeStyles} from "@/styles/homeStyles";
 import {SafeAreaView} from "react-native-safe-area-context";
@@ -10,11 +10,13 @@ import {Colors} from "@/utils/Constants";
 import {uiStyles} from "@/styles/uiStyles";
 import LocationInput from "@/components/customer/location-input";
 import {useEffect, useState} from "react";
-import {getLatLong, getPlacesSuggestions} from "@/utils/mapUtils";
+import {calculateDistance, getLatLong, getPlacesSuggestions} from "@/utils/mapUtils";
 import {locationStyles} from "@/styles/locationStyles";
 import {useCustomerStore} from "@/store/customerStore";
 import LocationItem from "@/components/customer/location-item";
 import MapPickerModal from "@/components/customer/map-picker-modal";
+import {navigate} from "@/utils/Helpers";
+import {Routes} from "@/utils/Routes";
 
 function SelectLocations() {
     const {location, setLocation} = useCustomerStore();
@@ -56,12 +58,56 @@ function SelectLocations() {
         );
     }
 
+    const checkDistance = async () => {
+        if (!pickupCoords || !dropCoords) return;
+
+        const {latitude: pickupLat, longitude: pickupLng} = pickupCoords;
+        const {latitude: dropLat, longitude: dropLng} = dropCoords;
+        if (pickupLat === dropLat && pickupLng === dropLng) {
+            Alert.alert('Pickup and drop location can\'t be same. Please select different locations');
+            return;
+        }
+
+        const distance = calculateDistance(pickupLat, pickupLng, dropLat, dropLng);
+        const minDistance = 0.5;
+        const maxDistance = 50;
+
+        if (distance < minDistance) {
+            Alert.alert('The selected locations are too close. Please choose locations that are further apart');
+        } else if (distance > maxDistance) {
+            Alert.alert('The selected locations are too far. Please choose a closer drop location');
+        } else {
+            setLocations([]);
+            // navigate(router, Routes.CUSTOMER_RIDE_BOOKING);
+            router.navigate({
+                pathname: `/${Routes.CUSTOMER_RIDE_BOOKING}`,
+                params: {
+                    distanceInKm: distance.toFixed(2),
+                    drop_latitude: dropCoords?.latitude,
+                    drop_longitude: dropCoords?.longitude,
+                    drop_address: drop,
+                },
+            });
+            setIsMapModalVisible(false);
+            console.log('distance is valid:', distance.toFixed(2), 'km');
+        }
+    }
+
     useEffect(() => {
         if (location) {
             setPickupCoords(location);
             setPickup(location?.address);
         }
     }, [location]);
+
+    useEffect(() => {
+        if (dropCoords && pickupCoords) {
+            checkDistance();
+        } else {
+            setLocations([]);
+            setIsMapModalVisible(false);
+        }
+    }, [dropCoords, pickupCoords]);
 
     return (
         <View style={homeStyles.container}>
@@ -105,12 +151,13 @@ function SelectLocations() {
                     address: focusedInput === 'drop' ? dropCoords?.address : pickupCoords?.address,
                 }} title={modalTitle} visible={isMapModalVisible} onClose={() => setIsMapModalVisible(false)} onSelectLocation={(data: any) => {
                     if (data) {
-                        if (modalTitle === 'drop') {
+                        // if (modalTitle === 'drop') {
+                        if (focusedInput === 'drop') {
                             setDropCoords(data);
                             setDrop(data?.address);
                         } else {
-                            setDropCoords(data);
-                            setDrop(data?.address);
+                            setPickupCoords(data);
+                            setPickup(data?.address);
                         }
                     }
                 }}/>

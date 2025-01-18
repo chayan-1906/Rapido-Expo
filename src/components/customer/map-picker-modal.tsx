@@ -3,7 +3,7 @@ import {modalStyles} from "@/styles/modalStyles";
 import {Ionicons, MaterialCommunityIcons} from "@expo/vector-icons";
 import {RFValue} from "react-native-responsive-fontsize";
 import {getLatLong, getPlacesSuggestions, reverseGeocode} from "@/utils/mapUtils";
-import {useRef, useState} from "react";
+import {memo, useEffect, useRef, useState} from "react";
 import MapView, {Region} from "react-native-maps";
 import {useCustomerStore} from "@/store/customerStore";
 import LocationItem from "@/components/customer/location-item";
@@ -90,6 +90,26 @@ function MapPickerModal({selectedLocation, title, visible, onClose, onSelectLoca
         }
     }
 
+    useEffect(() => {
+        const {latitude, longitude, address} = selectedLocation;
+        if (latitude) {
+            setAddress(address);
+            setRegion({
+                latitude,
+                longitude,
+                latitudeDelta: 0.5,
+                longitudeDelta: 0.5,
+            });
+            mapRef?.current?.fitToCoordinates([{
+                latitude,
+                longitude,
+            }], {
+                edgePadding: {top: 50, right: 50, bottom: 50, left: 50},
+                animated: true,
+            });
+        }
+    }, [selectedLocation, mapRef]);
+
     return (
         <Modal animationType={'slide'} visible={visible} presentationStyle={'formSheet'} onRequestClose={onClose}>
             <View style={modalStyles.modalContainer}>
@@ -97,60 +117,63 @@ function MapPickerModal({selectedLocation, title, visible, onClose, onSelectLoca
                 <TouchableOpacity onPress={onClose}>
                     <Text style={modalStyles.cancelButton}>Cancel</Text>
                 </TouchableOpacity>
-            </View>
 
-            <View style={modalStyles.searchContainer}>
-                <Ionicons name={'search-outline'} size={RFValue(16)} color={'#777'}/>
-                <TextInput ref={textInputRef} style={modalStyles.input} placeholder={'Search address...'} placeholderTextColor={'#AAA'} value={text} onChangeText={(text) => {
-                    setText(text);
-                    fetchLocation(text);
-                }}/>
-            </View>
+                <View style={modalStyles.searchContainer}>
+                    <Ionicons name={'search-outline'} size={RFValue(16)} color={'#777'}/>
+                    <TextInput ref={textInputRef} style={modalStyles.input} placeholder={'Search address...'} placeholderTextColor={'#AAA'} value={text} onChangeText={(text) => {
+                        setText(text);
+                        fetchLocation(text);
+                    }}/>
+                </View>
 
-            {text !== '' ? (
-                <FlatList data={locations} renderItem={renderLocations} keyExtractor={(item: any) => item?.place_id} initialNumToRender={5} windowSize={5} ListHeaderComponent={
-                    <View>
-                        {text.length > 4 ? null : (
-                            <Text style={{marginHorizontal: 16}}>Enter at least 4 characters to search...</Text>
-                        )}
-                    </View>
-                }/>
-            ) : (
-                <>
-                    <View style={{flex: 1, width: '100%'}}>
-                        <MapView ref={mapRef} initialRegion={{
-                            latitude: region?.latitude ?? location?.latitude ?? indiaInitialRegion?.latitude,
-                            longitude: region?.longitude ?? location?.longitude ?? indiaInitialRegion?.longitude,
-                            latitudeDelta: 0.5,
-                            longitudeDelta: 0.5,
-                        }}
-                            // minZoomLevel={9}
-                            // maxZoomLevel={16}
-                            // cameraZoomRange={{minCenterCoordinateDistance: 12, maxCenterCoordinateDistance: 16}}
-                                 pitchEnabled={false} onRegionChangeComplete={handleRegionChangeComplete} style={{flex: 1}} customMapStyle={customMapStyle}
-                                 showsMyLocationButton={false} showsCompass={false} showsIndoors={false} showsIndoorLevelPicker={false} showsTraffic={false} showsScale={false} showsBuildings={false}
-                                 showsPointsOfInterest={false} showsUserLocation={true}/>
-
-                        <View style={mapStyles.centerMarkerContainer}>
-                            <Image source={title === 'drop' ? require('@/assets/icons/drop_marker.png') : require('@/assets/icons/marker.png')} style={mapStyles.marker}/>
+                {text !== '' ? (
+                    <FlatList data={locations} renderItem={renderLocations} keyExtractor={(item: any) => item?.place_id} initialNumToRender={5} windowSize={5} ListHeaderComponent={
+                        <View>
+                            {text.length > 4 ? null : (
+                                <Text style={{marginHorizontal: 16}}>Enter at least 4 characters to search...</Text>
+                            )}
                         </View>
+                    }/>
+                ) : (
+                    <>
+                        {/** map */}
+                        <View style={{flex: 1, width: '100%'}}>
+                            <MapView ref={mapRef} initialRegion={{
+                                latitude: region?.latitude ?? location?.latitude ?? indiaInitialRegion?.latitude,
+                                longitude: region?.longitude ?? location?.longitude ?? indiaInitialRegion?.longitude,
+                                latitudeDelta: 0.5,
+                                longitudeDelta: 0.5,
+                            }}
+                                // minZoomLevel={9}
+                                // maxZoomLevel={16}
+                                // cameraZoomRange={{minCenterCoordinateDistance: 12, maxCenterCoordinateDistance: 16}}
+                                     pitchEnabled={false} onRegionChangeComplete={handleRegionChangeComplete} style={{flex: 1}} customMapStyle={customMapStyle}
+                                     showsMyLocationButton={false} showsCompass={false} showsIndoors={false} showsIndoorLevelPicker={false} showsTraffic={false} showsScale={false} showsBuildings={false}
+                                     showsPointsOfInterest={false} showsUserLocation={true}/>
 
-                        <TouchableOpacity style={mapStyles.gpsButton} onPress={handleGPSButton}>
-                            <MaterialCommunityIcons name={'crosshairs-gps'} size={RFValue(18)} color={'#3C75BE'}/>
-                        </TouchableOpacity>
-                    </View>
-                    <View style={modalStyles.footerContainer}>
-                        <Text style={modalStyles.addressText} numberOfLines={2}>{address === '' ? 'Getting address...' : address}</Text>
-                        <View style={modalStyles.buttonContainer}>
-                            <TouchableOpacity style={modalStyles.button} onPress={() => onSelectLocation({type: title, latitude: region?.latitude, longitude: region?.longitude, address})}>
-                                <Text style={modalStyles.buttonText}>Set Address</Text>
+                            <View style={mapStyles.centerMarkerContainer}>
+                                <Image source={title === 'drop' ? require('@/assets/icons/drop_marker.png') : require('@/assets/icons/marker.png')} style={mapStyles.marker}/>
+                            </View>
+
+                            <TouchableOpacity style={mapStyles.gpsButton} onPress={handleGPSButton}>
+                                <MaterialCommunityIcons name={'crosshairs-gps'} size={RFValue(18)} color={'#3C75BE'}/>
                             </TouchableOpacity>
                         </View>
-                    </View>
-                </>
-            )}
+
+                        {/** footer */}
+                        <View style={modalStyles.footerContainer}>
+                            <Text style={modalStyles.addressText} numberOfLines={2}>{address === '' ? 'Getting address...' : address}</Text>
+                            <View style={modalStyles.buttonContainer}>
+                                <TouchableOpacity style={modalStyles.button} onPress={() => onSelectLocation({type: title, latitude: region?.latitude, longitude: region?.longitude, address})}>
+                                    <Text style={modalStyles.buttonText}>Set Address</Text>
+                                </TouchableOpacity>
+                            </View>
+                        </View>
+                    </>
+                )}
+            </View>
         </Modal>
     );
 }
 
-export default MapPickerModal;
+export default memo(MapPickerModal);
