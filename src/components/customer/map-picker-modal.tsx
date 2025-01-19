@@ -155,6 +155,7 @@ function MapPickerModal({selectedLocation, title, visible, onClose, onSelectLoca
                                 <Image source={title === 'drop' ? require('@/assets/icons/drop_marker.png') : require('@/assets/icons/marker.png')} style={mapStyles.marker}/>
                             </View>
 
+                            {/** gps button */}
                             <TouchableOpacity style={mapStyles.gpsButton} onPress={handleGPSButton}>
                                 <MaterialCommunityIcons name={'crosshairs-gps'} size={RFValue(18)} color={'#3C75BE'}/>
                             </TouchableOpacity>

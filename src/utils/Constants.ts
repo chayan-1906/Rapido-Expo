@@ -23,4 +23,14 @@ export enum SecureStorageKeys {
 export enum WebSocketKeys {
     subscribeToZone = 'subscribeToZone',
     nearbyCaptains = 'nearbyCaptains',
+    subscribeRide = 'subscribeRide',
+    rideData = 'rideData',
+    searchCaptain = 'searchCaptain',
+    rideUpdate = 'rideUpdate',
+    rideCancelled = 'rideCanceled',
+    subscribeToCaptainLocation = 'subscribeToCaptainLocation',
+    captainLocationUpdate = 'captainLocationUpdate',
+
+
+    error = 'error',
 }

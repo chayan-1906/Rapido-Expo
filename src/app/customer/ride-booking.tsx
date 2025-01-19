@@ -1,7 +1,7 @@
-import {Image, ScrollView, TouchableOpacity, View} from "react-native";
+import {Alert, Image, ScrollView, TouchableOpacity, View} from "react-native";
 import {useRoute} from "@react-navigation/core";
 import {useCustomerStore} from "@/store/customerStore";
-import {memo, useCallback, useMemo, useState} from "react";
+import {memo, useCallback, useEffect, useMemo, useState} from "react";
 import {calculateFare} from "@/utils/mapUtils";
 import {rideStyles} from "@/styles/rideStyles";
 import {StatusBar} from "expo-status-bar";
@@ -12,12 +12,14 @@ import {Ionicons, MaterialIcons} from "@expo/vector-icons";
 import {RFValue} from "react-native-responsive-fontsize";
 import {commonStyles} from "@/styles/commonStyles";
 import CustomButton from "@/components/shared/CustomButton";
+import RoutesMap from "@/components/customer/routes-map";
+import {createRide} from "@/services/rideService";
 
 function CustomerRideBooking() {
     const router = useRouter();
     const route = useRoute() as any;
     const item = route?.params as any;
-    const {location} = useCustomerStore() as any;
+    const {location: pickup} = useCustomerStore() as any;
     const [selectedOption, setSelectedOption] = useState('Bike');
     const [loading, setLoading] = useState(false);
 
@@ -34,17 +36,62 @@ function CustomerRideBooking() {
         setSelectedOption(type);
     }, []);
 
-    const handleRideBooking = useCallback(() => {
+    const handleRideBooking = useCallback(async () => {
+        setLoading(true);
+        let selectedRide: 'bike' | 'auto' | 'cabEconomy' | 'cabPremium';
+        if (selectedOption === 'Auto') {
+            selectedRide = 'auto';
+        } else if (selectedOption === 'Cab Economy') {
+            selectedRide = 'cabEconomy';
+        } else if (selectedOption === 'Cab Premium') {
+            selectedRide = 'cabPremium';
 
-    }, []);
+        } else {
+            selectedRide = 'bike';
+        }
+
+        if (!pickup.latitude || !pickup.longitude) {
+            Alert.alert('Invalid pickup location');
+            setLoading(false);
+            return;
+        }
+        if (!item.drop_latitude || !item.drop_longitude) {
+            Alert.alert('Invalid drop location');
+            setLoading(false);
+            return;
+        }
+        await createRide({
+            vehicle: selectedRide,
+            pickup: {
+                latitude: parseFloat(pickup.latitude),
+                longitude: parseFloat(pickup.longitude),
+                address: pickup.address,
+            },
+            drop: {
+                latitude: parseFloat(item.drop_latitude),
+                longitude: parseFloat(item.drop_longitude),
+                address: item.drop_address,
+            },
+        }, router);
+        setLoading(false);
+    }, [pickup, item]);
+
+    useEffect(() => {
+        // for debugging
+        console.log('pickup:', pickup);
+        console.log('drop:', item);
+    }, [pickup, item]);
 
     return (
         <View style={rideStyles.container}>
             <StatusBar style={'light'} backgroundColor={'orange'} translucent={true}/>
 
-            <View style={{height: 300}}>
-
-            </View>
+            {item?.drop_latitude && pickup?.latitude && (
+                <RoutesMap
+                    drop={{latitude: parseFloat(item?.drop_latitude), longitude: parseFloat(item?.drop_longitude)}}
+                    pickup={{latitude: parseFloat(pickup?.latitude), longitude: parseFloat(pickup?.longitude)}}
+                />
+            )}
 
             <View style={rideStyles.rideSelectionContainer}>
                 <View style={rideStyles.offerContainer}>

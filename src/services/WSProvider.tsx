@@ -36,27 +36,31 @@ export const WSProvider = ({children}: { children: React.ReactNode }) => {
                 socketRef.current.disconnect();
             }
 
-            console.log('about to assigning socketRef.current');
-            socketRef.current = io(SOCKET_URL, {
-                transports: ['websocket'],
-                withCredentials: true,
-                extraHeaders: {
-                    access_token: socketAccessToken || '',
-                },
-            });
-            console.log('socketRef.current assigned');
+            console.log('about to assign socketRef.current');
+            try {
+                socketRef.current = io(SOCKET_URL, {
+                    transports: ['websocket'],
+                    withCredentials: true,
+                    extraHeaders: {
+                        access_token: socketAccessToken || '',
+                    },
+                });
+                console.log('socketRef.current assigned');
 
-            console.log('before socketRef.current.on error');
-            socketRef.current.on('connect_error', async (error) => {
-                if (error.message === 'Authentication error') {
-                    console.log('Auth connection error:', error.message);
-                    await refreshTokenApi();
+                console.log('before socketRef.current.on error');
+                socketRef.current.on('connect_error', async (error) => {
+                    if (error.message === 'Authentication error') {
+                        console.log('Auth connection error:', error.message);
+                        await refreshTokenApi();
+                    }
+                });
+
+                return () => {
+                    socketRef.current?.disconnect();
                 }
-            });
-        }
-
-        return () => {
-            socketRef.current?.disconnect();
+            } catch (error) {
+                console.error('inside catch of assigning socketRef.current', error);
+            }
         }
     }, [socketAccessToken]);
 

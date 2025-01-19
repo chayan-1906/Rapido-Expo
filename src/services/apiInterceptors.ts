@@ -32,7 +32,8 @@ export const refreshTokenApi = async () => {
 }
 
 appAxios.interceptors.request.use(async (config) => {
-    const accessToken = getAccessToken();
+    const accessToken = await getAccessToken();
+    console.log('getting access token inside appAxios.interceptors.request:', accessToken);
     if (accessToken) {
         config.headers.Authorization = `Bearer ${accessToken}`;
     }
