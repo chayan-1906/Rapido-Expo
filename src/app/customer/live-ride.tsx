@@ -1,4 +1,4 @@
-import {Alert, Platform, View} from "react-native";
+import {ActivityIndicator, Alert, Platform, View} from "react-native";
 import {useRoute} from "@react-navigation/core";
 import {screenHeight, WebSocketKeys} from "@/utils/Constants";
 import {useWS} from "@/services/WSProvider";
@@ -8,11 +8,14 @@ import {StatusBar} from "expo-status-bar";
 import {resetAndNavigate} from "@/utils/Helpers";
 import {Routes} from "@/utils/Routes";
 import LiveTrackingMap from "@/components/customer/live-tracking-map";
+import BottomSheet, {BottomSheetScrollView} from "@gorhom/bottom-sheet";
+import SearchingRideSheet from "@/components/customer/searching-ride-sheet";
+import LiveTrackingSheet from "@/components/customer/live-tracking-sheet";
 
 const androidHeights = [screenHeight * 0.22, screenHeight * 0.42, screenHeight * 0.7];
 const iOSHeights = [screenHeight * 0.3, screenHeight * 0.5, screenHeight * 0.7];
 
-function LiveRide() {
+function CustomerLiveRide() {
     const {emit, on, off} = useWS();
     const [rideData, setRideData] = useState<any>(null);
     const [captainCoords, setCaptainCoords] = useState<any>(null);
@@ -22,7 +25,7 @@ function LiveRide() {
 
     const bottomSheetRef = useRef(null);
     const snapPoints = useMemo(() => Platform.OS === 'ios' ? iOSHeights : androidHeights, []);
-    const [mapHeight, setMapHeight] = useState(snapPoints[0]);
+    const [mapHeight, setMapHeight] = useState(snapPoints[2]);
 
     const handleSheetChanges = useCallback((index: number) => {
         /*let height = screenHeight * 0.7;
@@ -33,10 +36,12 @@ function LiveRide() {
     }, []);
 
     useEffect(() => {
+        console.log('rideId:', rideId);
         if (rideId) {
-            emit(WebSocketKeys.subscribeRide);
+            emit(WebSocketKeys.subscribeRide, rideId);
 
             on(WebSocketKeys.rideData, (data) => {
+                console.log('WebSocketKeys.rideData:', data);
                 setRideData(data);
                 if (data?.status === 'SEARCHING_FOR_CAPTAIN') {
                     emit(WebSocketKeys.searchCaptain, rideId);
@@ -44,16 +49,17 @@ function LiveRide() {
             });
 
             on(WebSocketKeys.rideUpdate, (data) => {
+                console.log('WebSocketKeys.rideUpdate');
                 setRideData(data);
             });
 
             on(WebSocketKeys.rideCancelled, (error) => {
-                resetAndNavigate(Routes.CAPTAIN_HOME);
+                resetAndNavigate(Routes.CUSTOMER_HOME);
                 Alert.alert('Ride cancelled');
             });
 
             on(WebSocketKeys.error, (error) => {
-                resetAndNavigate(Routes.CAPTAIN_HOME);
+                resetAndNavigate(Routes.CUSTOMER_HOME);
                 Alert.alert('Oh! Dang! No Riders found');
             });
         }
@@ -95,8 +101,25 @@ function LiveRide() {
                                  }
                 />
             )}
+
+            {rideData ? (
+                <BottomSheet ref={bottomSheetRef} index={1} handleIndicatorStyle={{backgroundColor: '#CCC'}} enableOverDrag={true} enableDynamicSizing={false} style={{zIndex: 4}}
+                             snapPoints={snapPoints} onChange={handleSheetChanges}>
+                    <BottomSheetScrollView contentContainerStyle={rideStyles?.container}>
+                        {rideData?.status === 'SEARCHING_FOR_CAPTAIN' ? (
+                            <SearchingRideSheet item={rideData}/>
+                        ) : (
+                            <LiveTrackingSheet item={rideData}/>
+                        )}
+                    </BottomSheetScrollView>
+                </BottomSheet>
+            ) : (
+                <View style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
+                    <ActivityIndicator color={'black'} size={'small'}/>
+                </View>
+            )}
         </View>
     );
 }
 
-export default memo(LiveRide);
+export default memo(CustomerLiveRide);

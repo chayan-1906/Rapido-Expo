@@ -8,7 +8,7 @@ import {mapStyles} from "@/styles/mapStyles";
 import {customMapStyle, indiaInitialRegion} from "@/utils/CustomMap";
 import {Colors} from "@/utils/Constants";
 
-const apiKey = process.env.EXPO_PUBLIC_MAP_API_KEY || '';
+export const apiKey = process.env.EXPO_PUBLIC_MAP_API_KEY || '';
 
 function RoutesMap({drop, pickup}: { drop: any, pickup: any }) {
     const mapRef = useRef<MapView>(null);

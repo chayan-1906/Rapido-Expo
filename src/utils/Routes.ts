@@ -10,4 +10,5 @@ export enum Routes {
 
     CAPTAIN_AUTH = 'captain/auth',
     CAPTAIN_HOME = 'captain/home',
+    CAPTAIN_LIVE_RIDE = 'captain/live-ride',
 }

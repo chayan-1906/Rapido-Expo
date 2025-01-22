@@ -28,3 +28,22 @@ export const createRide = async (payload: {
         console.error('inside catch of createRide:', error);
     }
 }
+
+export const getMyRides = async (isCustomer: boolean = true, router: Router) => {
+    try {
+        console.log('getMyRides');
+        const res = await appAxios.get('/ride/rides');
+        const filteredRides = res.data.rides?.filter((ride: any) => ride?.status === 'COMPLETED');
+        if (filteredRides && filteredRides.length > 0) {
+            router.navigate({
+                pathname: isCustomer ? `/${Routes.CUSTOMER_LIVE_RIDE}` : `/${Routes.CAPTAIN_LIVE_RIDE}`,
+                params: {
+                    id: filteredRides[0]?._id,
+                },
+            });
+        }
+    } catch (error) {
+        Alert.alert('Oh! Dang there was an error');
+        console.error('inside catch of createRide:', error);
+    }
+}

@@ -18,6 +18,7 @@ function RootLayout() {
 
                 <Stack.Screen name={Routes.CAPTAIN_AUTH}/>
                 <Stack.Screen name={Routes.CAPTAIN_HOME}/>
+                <Stack.Screen name={Routes.CAPTAIN_LIVE_RIDE}/>
             </Stack>
         </WSProvider>
     );
