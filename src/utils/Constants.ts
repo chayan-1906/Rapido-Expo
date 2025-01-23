@@ -31,7 +31,10 @@ export enum WebSocketKeys {
     subscribeToCaptainLocation = 'subscribeToCaptainLocation',
     captainLocationUpdate = 'captainLocationUpdate',
     cancelRide = 'cancelRide',
-
+    goOnDuty = 'goOnDuty',
+    goOffDuty = 'goOffDuty',
+    rideOffer = 'rideOffer',
+    updateLocation = 'updateLocation',
 
     error = 'error',
 }

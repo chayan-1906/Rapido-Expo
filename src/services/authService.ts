@@ -46,7 +46,11 @@ export const loginApi = async (payload: { role: 'customer' | 'captain', phone: s
     }
 }
 
-export const logout = async () => {
+export const logout = async (disconnect?: () => void) => {
+    if (disconnect) {
+        disconnect();
+    }
+
     const {clearData: clearCustomerData} = useCustomerStore.getState();
     const {clearData: clearCaptainData} = useCaptainStore.getState();
 

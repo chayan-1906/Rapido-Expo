@@ -1,6 +1,6 @@
 import {useCustomerStore} from "@/store/customerStore";
 import {useWS} from "@/services/WSProvider";
-import {Text, TouchableOpacity, View} from "react-native";
+import {TouchableOpacity, View} from "react-native";
 import {uiStyles} from "@/styles/uiStyles";
 import {SafeAreaView} from "react-native-safe-area-context";
 import {Ionicons} from "@expo/vector-icons";
@@ -10,6 +10,7 @@ import {useRouter} from "expo-router";
 import {Routes} from "@/utils/Routes";
 import {navigate} from "@/utils/Helpers";
 import CustomText from "@/components/shared/CustomText";
+import {logout} from "@/services/authService";
 
 function LocationBar() {
     const {location} = useCustomerStore();
@@ -20,7 +21,7 @@ function LocationBar() {
         <View style={uiStyles.absoluteTop}>
             <SafeAreaView/>
             <View style={uiStyles.container}>
-                <TouchableOpacity>
+                <TouchableOpacity style={uiStyles.btn} onPress={() => logout(disconnect)}>
                     <Ionicons name={'menu-outline'} size={RFValue(18)} color={Colors.text}/>
                 </TouchableOpacity>
 

@@ -106,7 +106,7 @@ function CustomerLiveRide() {
                 <BottomSheet ref={bottomSheetRef} index={1} handleIndicatorStyle={{backgroundColor: '#CCC'}} enableOverDrag={true} enableDynamicSizing={false} style={{zIndex: 4}}
                              snapPoints={snapPoints} onChange={handleSheetChanges}>
                     <BottomSheetScrollView contentContainerStyle={rideStyles?.container}>
-                        {rideData?.status === 'SEARCHING_FOR_CAPTAIN' ? (
+                        {rideData?.status !== 'SEARCHING_FOR_CAPTAIN' ? (
                             <SearchingRideSheet item={rideData}/>
                         ) : (
                             <LiveTrackingSheet item={rideData}/>
