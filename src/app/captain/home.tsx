@@ -12,9 +12,10 @@ import {WebSocketKeys} from "@/utils/Constants";
 import * as Location from "expo-location";
 import {LocationAccuracy} from "expo-location";
 import CaptainRidesItem from "@/components/captain/captain-rides-item";
+import {getMyRides} from "@/services/rideService";
 
 function CaptainHome() {
-    const {disconnect, emit, on, off} = useWS();
+    const {emit, on, off} = useWS();
     const {onDuty, setOnDuty, setLocation} = useCaptainStore();
     const isFocused = useIsFocused();
     const [rideOffers, setRideOffers] = useState<any[]>([]);
@@ -31,6 +32,7 @@ function CaptainHome() {
 
     useEffect(() => {
         let locationSubscription: any;
+
         const startLocationUpdates = async () => {
             const {status} = await Location.requestForegroundPermissionsAsync();
             if (status === 'granted') {
@@ -76,9 +78,9 @@ function CaptainHome() {
         }
     }, [onDuty, on, off, isFocused]);
 
-    // useEffect(() => {
-    //     getMyRides(false);
-    // }, []);
+    useEffect(() => {
+        getMyRides(false);
+    }, []);
 
     return (
         <View style={homeStyles.container}>

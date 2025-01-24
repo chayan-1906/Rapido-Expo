@@ -3,14 +3,15 @@ import {memo, useEffect, useRef, useState} from "react";
 import MapView, {Marker, Polyline, PROVIDER_DEFAULT} from "react-native-maps";
 import {customMapStyle, indiaInitialRegion} from "@/utils/CustomMap";
 import MapViewDirections from "react-native-maps-directions";
-import {Colors} from "@/utils/Constants";
 import {apiKey} from "@/components/customer/routes-map";
+import {Colors} from "@/utils/Constants";
 import {getPoints} from "@/utils/mapUtils";
 import {mapStyles} from "@/styles/mapStyles";
-import {MaterialCommunityIcons} from "@expo/vector-icons";
+import {FontAwesome6, MaterialCommunityIcons} from "@expo/vector-icons";
 import {RFValue} from "react-native-responsive-fontsize";
+import CustomText from "@/components/shared/CustomText";
 
-function LiveTrackingMap({height, status, drop, pickup, captain}: { height: number, status: string, drop: any, pickup: any, captain: any }) {
+function CaptainLiveTracking({status, drop, pickup, captain}: { status: string, drop: any, pickup: any, captain: any }) {
     const mapRef = useRef<MapView>(null);
     const [isUserInteracting, setIsUserInteracting] = useState(false);
 
@@ -41,6 +42,10 @@ function LiveTrackingMap({height, status, drop, pickup, captain}: { height: numb
         }
     }
 
+    const fitToMarkersWithDelay = () => {
+        setTimeout(() => fitToMarkers(), 500);
+    }
+
     const calculateInitialRegion = () => {
         if (pickup?.latitude && pickup?.longitude) {
             const latitude = (pickup.latitude + drop.latitude) / 2;
@@ -56,19 +61,19 @@ function LiveTrackingMap({height, status, drop, pickup, captain}: { height: numb
     }, [drop?.latitude, pickup?.latitude, captain.latitude]);
 
     return (
-        <View style={{height: height, width: '100%'}}>
+        <View style={{flex: 1}}>
             <MapView ref={mapRef} followsUserLocation style={{flex: 1}} initialRegion={calculateInitialRegion()} provider={PROVIDER_DEFAULT} showsMyLocationButton showsCompass={false}
                      showsIndoors={false} showsUserLocation customMapStyle={customMapStyle} onRegionChange={() => setIsUserInteracting(true)}
                      onRegionChangeComplete={() => setIsUserInteracting(false)}>
                 {captain?.latitude && pickup?.latitude && (
                     <MapViewDirections
                         apikey={apiKey}
-                        origin={captain}
-                        destination={status === 'START' ? pickup : drop}
+                        origin={status === 'START' ? pickup : captain}
+                        destination={status === 'START' ? captain : drop}
                         strokeWidth={5}
                         strokeColor={Colors.primary}
                         precision={'high'}
-                        onReady={fitToMarkers}
+                        onReady={fitToMarkersWithDelay}
                         onError={(err) => console.log('Directions error:', err)}
                     />
                 )}
@@ -102,6 +107,11 @@ function LiveTrackingMap({height, status, drop, pickup, captain}: { height: numb
                 )}
             </MapView>
 
+            <TouchableOpacity style={mapStyles.gpsLiveButton} onPress={() => {}}>
+                <CustomText fontFamily={'SemiBold'}>Open Live GPS</CustomText>
+                <FontAwesome6 name={'location-arrow'} size={RFValue(12)} color={'#000'}/>
+            </TouchableOpacity>
+
             {/** gps button */}
             <TouchableOpacity style={mapStyles.gpsButton} onPress={fitToMarkers}>
                 <MaterialCommunityIcons name={'crosshairs-gps'} size={RFValue(16)} color={'#3C75BE'}/>
@@ -110,4 +120,4 @@ function LiveTrackingMap({height, status, drop, pickup, captain}: { height: numb
     );
 }
 
-export default memo(LiveTrackingMap);
+export default memo(CaptainLiveTracking);

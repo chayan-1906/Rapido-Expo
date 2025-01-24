@@ -12,8 +12,8 @@ import BottomSheet, {BottomSheetScrollView} from "@gorhom/bottom-sheet";
 import SearchingRideSheet from "@/components/customer/searching-ride-sheet";
 import LiveTrackingSheet from "@/components/customer/live-tracking-sheet";
 
-const androidHeights = [screenHeight * 0.22, screenHeight * 0.42, screenHeight * 0.7];
-const iOSHeights = [screenHeight * 0.3, screenHeight * 0.5, screenHeight * 0.7];
+const androidHeights = [screenHeight * 0.42, screenHeight * 0.7];
+const iOSHeights = [screenHeight * 0.5, screenHeight * 0.7];
 
 function CustomerLiveRide() {
     const {emit, on, off} = useWS();
@@ -25,7 +25,7 @@ function CustomerLiveRide() {
 
     const bottomSheetRef = useRef(null);
     const snapPoints = useMemo(() => Platform.OS === 'ios' ? iOSHeights : androidHeights, []);
-    const [mapHeight, setMapHeight] = useState(snapPoints[2]);
+    const [mapHeight, setMapHeight] = useState(snapPoints[1]);
 
     const handleSheetChanges = useCallback((index: number) => {
         /*let height = screenHeight * 0.7;
@@ -106,7 +106,7 @@ function CustomerLiveRide() {
                 <BottomSheet ref={bottomSheetRef} index={1} handleIndicatorStyle={{backgroundColor: '#CCC'}} enableOverDrag={true} enableDynamicSizing={false} style={{zIndex: 4}}
                              snapPoints={snapPoints} onChange={handleSheetChanges}>
                     <BottomSheetScrollView contentContainerStyle={rideStyles?.container}>
-                        {rideData?.status !== 'SEARCHING_FOR_CAPTAIN' ? (
+                        {rideData?.status === 'SEARCHING_FOR_CAPTAIN' ? (
                             <SearchingRideSheet item={rideData}/>
                         ) : (
                             <LiveTrackingSheet item={rideData}/>

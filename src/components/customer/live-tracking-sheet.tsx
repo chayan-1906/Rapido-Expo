@@ -33,11 +33,12 @@ function LiveTrackingSheet({item}: { item: RideItem }) {
                     {item.vehicle && (
                         <Image source={vehicleIcons[item.vehicle]?.icon} style={rideStyles.rideIcon}/>
                     )}
-
-                    <CustomText fontSize={10}>
-                        {item?.status === 'START' ? 'Captain near you' : item?.status === 'ARRIVED' ? 'Happy Journey' : "You had a wonderful journey"}
-                    </CustomText>
-                    <CustomText fontSize={10}>{item?.status === 'START' ? `OTP - ${item?.otp}` : '🕶️'}</CustomText>
+                    <View>
+                        <CustomText fontSize={10}>
+                            {item?.status === 'START' ? 'Captain near you' : item?.status === 'ARRIVED' ? 'Happy Journey' : "You had a wonderful journey"}
+                        </CustomText>
+                        <CustomText>{item?.status === 'START' ? `OTP - ${item?.otp}` : '🕶️'}</CustomText>
+                    </View>
                 </View>
                 <CustomText fontSize={11} numberOfLines={1} fontFamily={'Medium'}>
                     +91 {item?.captain?.phone && item?.captain?.phone?.slice(0, 5) + ' ' + item?.captain?.phone?.slice((5))}

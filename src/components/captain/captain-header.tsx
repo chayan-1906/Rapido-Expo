@@ -45,7 +45,7 @@ function CaptainHeader() {
             <SafeAreaView/>
             <View style={commonStyles.flexRowBetween}>
                 <MaterialIcons name={'menu'} size={24} color={'black'} onPress={() => logout(disconnect)}/>
-                <TouchableOpacity style={captainStyles.toggleContainer} onPress={toggleOnDuty}>
+                <TouchableOpacity style={captainStyles.toggleContainer} onPress={() => setOnDuty(!onDuty)}>
                     <CustomText fontFamily={'SemiBold'} fontSize={12} style={{color: '#888'}}>{onDuty ? 'ON-DUTY' : 'OFF-DUTY'}</CustomText>
                     <Image source={onDuty ? require('@/assets/icons/switch_on.png') : require('@/assets/icons/switch_off.png')} style={captainStyles.icon}/>
                 </TouchableOpacity>

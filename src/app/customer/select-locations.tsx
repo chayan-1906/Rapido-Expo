@@ -88,6 +88,10 @@ function SelectLocations() {
                     drop_address: drop,
                 },
             });
+            setDrop('');
+            setPickup('');
+            setDropCoords(null);
+            setPickupCoords(null);
             setIsMapModalVisible(false);
             console.log('distance is valid:', distance.toFixed(2), 'km');
         }

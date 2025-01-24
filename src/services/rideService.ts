@@ -44,6 +44,36 @@ export const getMyRides = async (isCustomer: boolean = true, router: Router) => 
         }
     } catch (error) {
         Alert.alert('Oh! Dang there was an error');
-        console.error('inside catch of createRide:', error);
+        console.error('inside catch of getMyRides:', error);
+    }
+}
+
+export const acceptRideOffer = async (rideId: string, router: Router) => {
+    try {
+        console.log('acceptRideOffer');
+        const res = await appAxios.patch(`/ride/accept/${rideId}`);
+        /*resetAndNavigate({
+            path: '',
+            params: {id: rideId}
+        });*/
+        router.navigate({
+            pathname: `/${Routes.CAPTAIN_LIVE_RIDE}`,
+            params: {id: rideId},
+        });
+    } catch (error) {
+        Alert.alert('Oh! Dang there was an error');
+        console.error('inside catch of acceptRideOffer:', error);
+    }
+}
+
+export const updateRideStatus = async (rideId: string, status: string) => {
+    try {
+        console.log('updateRideStatus');
+        const res = await appAxios.patch(`/ride/update/${rideId}`, {status});
+        return true;
+    } catch (error: any) {
+        Alert.alert('Oh! Dang there was an error');
+        console.error('inside catch of updateRideStatus:', error);
+        return false;
     }
 }
